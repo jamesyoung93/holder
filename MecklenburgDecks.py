@@ -50,7 +50,10 @@ bin_stats = filtered_df.groupby(['X Bin', 'Y Bin']).agg(
 ).reset_index()
 
 # Pivot the table for heatmap plotting
-heatmap_data = bin_stats.pivot('Y Bin', 'X Bin', 'Deck_Need_Probability_Sum')
+#heatmap_data = bin_stats.pivot('Y Bin', 'X Bin', 'Deck_Need_Probability_Sum')
+
+heatmap_data = bin_stats.pivot(index='Y Bin', columns='X Bin', values='Deck_Need_Probability_Sum')
+
 
 # Create the Plotly heatmap figure
 fig = px.density_heatmap(
