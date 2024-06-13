@@ -94,16 +94,25 @@ heatmap_data = bin_stats.pivot(index='Y Bin', columns='X Bin', values='Deck_Need
 
 
 # Create the Plotly heatmap figure
-fig = px.density_heatmap(
-    filtered_df, x='X Coord', y='Y Coord', z='Deck Need Probability', nbinsx=len(x_bins)-1, nbinsy=len(y_bins)-1,
-    color_continuous_scale='Viridis', histfunc='sum'
-)
+#fig = px.density_heatmap(
+#    filtered_df, x='X Coord', y='Y Coord', z='Deck Need Probability', nbinsx=len(x_bins)-1, nbinsy=len(y_bins)-1,
+#    color_continuous_scale='Viridis', histfunc='sum'
+#)
 
-fig.update_layout(clickmode='event+select')
+#fig.update_layout(clickmode='event+select')
 
 # Use session state to manage selected bin
 if 'selected_bin' not in st.session_state:
     st.session_state['selected_bin'] = None
+
+# Display the Plotly figure
+#st.plotly_chart(fig)
+
+# Create the Plotly heatmap figure
+fig = px.density_heatmap(
+    filtered_df, x='X Coord', y='Y Coord', z='Deck Need Probability', nbinsx=len(x_bins)-1, nbinsy=len(y_bins)-1,
+    color_continuous_scale='Viridis', histfunc='sum'
+)
 
 # Display the Plotly figure
 st.plotly_chart(fig)
