@@ -7,11 +7,20 @@ import plotly.express as px
 from io import BytesIO
 
 # Load data
-@st.cache_data
+#@st.cache_data
 def load_data():
     return pd.read_csv("Mecklenburg_Deck_Prospects.csv")
 
 df = load_data()
+#@st.cache_data
+#uploaded_file = st.file_uploader("Choose a CSV file", type="csv")
+#if uploaded_file is not None:
+ #   df = pd.read_csv(uploaded_file)
+#else:
+ #   st.stop()
+
+#@st.cache_data
+# Check for the correct column name
 
 # Check for the correct column name
 if 'predicted_prob' not in df.columns:
@@ -46,6 +55,14 @@ y_range = st.sidebar.slider(
     step=1000.00
 )
 
+deck_area = st.sidebar.slider(
+    'Deck Area Between',
+    min_value=0,
+    max_value=1000,
+    value=(1,500),
+    step=1
+)
+
 # Adjust cell size
 cell_size = st.sidebar.number_input('Cell Size', value=5000, step=1000)
 
@@ -54,7 +71,8 @@ cell_size = st.sidebar.number_input('Cell Size', value=5000, step=1000)
  #                (df['Y Coord'] >= min_y) & (df['Y Coord'] <= max_y)]
 
 filtered_df = df[(df['X Coord'] >= x_range[0]) & (df['X Coord'] <= x_range[1]) &
-                 (df['Y Coord'] >= y_range[0]) & (df['Y Coord'] <= y_range[1])]
+                 (df['Y Coord'] >= y_range[0]) & (df['Y Coord'] <= y_range[1]) & 
+                 (df['Deck Area'] >= deck_area[0]) & (df['Deck Area'] <= deck_area[1])]
 
 # Assign bins to X and Y coordinates
 x_bins = np.arange(filtered_df['X Coord'].min(), filtered_df['X Coord'].max() + cell_size, cell_size)
@@ -110,18 +128,4 @@ if st.session_state['selected_bin']:
     filtered_rows = get_filtered_rows(x_bin, y_bin)
     selected_points.dataframe(filtered_rows)
 
-    # Download button
-    def to_excel(df):
-        output = BytesIO()
-        writer = pd.ExcelWriter(output, engine='openpyxl')
-        df.to_excel(writer, index=False, sheet_name='Sheet1')
-        writer.save()
-        processed_data = output.getvalue()
-        return processed_data
 
-    download_data = to_excel(filtered_rows)
-    st.download_button(
-        label="Download filtered data as Excel",
-        data=download_data,
-        file_name='filtered_data.xlsx'
-    )
