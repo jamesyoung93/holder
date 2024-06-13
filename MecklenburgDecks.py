@@ -24,17 +24,37 @@ df['Deck Need Probability'] = df['predicted_prob']
 st.sidebar.header('Filter Options')
 
 # Numeric filter inputs
-min_x = st.sidebar.number_input('Min X Coord', value=float(df['X Coord'].min()))
-max_x = st.sidebar.number_input('Max X Coord', value=float(df['X Coord'].max()))
-min_y = st.sidebar.number_input('Min Y Coord', value=float(df['Y Coord'].min()))
-max_y = st.sidebar.number_input('Max Y Coord', value=float(df['Y Coord'].max()))
+#min_x = st.sidebar.number_input('Min X Coord', value=float(df['X Coord'].min()))
+#max_x = st.sidebar.number_input('Max X Coord', value=float(df['X Coord'].max()))
+#min_y = st.sidebar.number_input('Min Y Coord', value=float(df['Y Coord'].min()))
+#max_y = st.sidebar.number_input('Max Y Coord', value=float(df['Y Coord'].max()))
+
+x_range = st.sidebar.slider(
+    'X Coord Range',
+    min_value=1384768.00,
+    max_value=1534680.00,
+    value=(1384768.00, 1534680.00),
+    step=1000.00
+)
+
+# Y Coordinate Range Slider
+y_range = st.sidebar.slider(
+    'Y Coord Range',
+    min_value=464747.08,
+    max_value=645088.00,
+    value=(464747.08, 645088.00),
+    step=1000.00
+)
 
 # Adjust cell size
 cell_size = st.sidebar.number_input('Cell Size', value=5000, step=1000)
 
 # Filter data based on user inputs
-filtered_df = df[(df['X Coord'] >= min_x) & (df['X Coord'] <= max_x) &
-                 (df['Y Coord'] >= min_y) & (df['Y Coord'] <= max_y)]
+#filtered_df = df[(df['X Coord'] >= min_x) & (df['X Coord'] <= max_x) &
+ #                (df['Y Coord'] >= min_y) & (df['Y Coord'] <= max_y)]
+
+filtered_df = df[(df['X Coord'] >= x_range[0]) & (df['X Coord'] <= x_range[1]) &
+                 (df['Y Coord'] >= y_range[0]) & (df['Y Coord'] <= y_range[1])]
 
 # Assign bins to X and Y coordinates
 x_bins = np.arange(filtered_df['X Coord'].min(), filtered_df['X Coord'].max() + cell_size, cell_size)
