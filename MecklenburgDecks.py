@@ -59,7 +59,7 @@ deck_area = st.sidebar.slider(
     'Deck Area Between',
     min_value=0,
     max_value=1000,
-    value=(1,500),
+    value=(0,500),
     step=1
 )
 
@@ -72,7 +72,7 @@ cell_size = st.sidebar.number_input('Cell Size', value=5000, step=1000)
 
 filtered_df = df[(df['X Coord'] >= x_range[0]) & (df['X Coord'] <= x_range[1]) &
                  (df['Y Coord'] >= y_range[0]) & (df['Y Coord'] <= y_range[1]) & 
-                 (df['Deck Area'] >= deck_area[0]) & (df['Deck Area'] <= deck_area[1])]
+                 (df['Deck Area'] >= deck_area[0]) & (df['Deck Area'] <= deck_area[1])].copy()
 
 # Assign bins to X and Y coordinates
 x_bins = np.arange(filtered_df['X Coord'].min(), filtered_df['X Coord'].max() + cell_size, cell_size)
@@ -115,8 +115,8 @@ selected_points = st.empty()
 def get_filtered_rows(x_bin, y_bin):
     return filtered_df[(filtered_df['X Bin'] == x_bin) & (filtered_df['Y Bin'] == y_bin)]
 
-# Simulate cell selection using a button for demonstration purposes
-if st.button('Show Rows for Example Bin'):
+## Simulate cell selection using a button for demonstration purposes
+if st.button('Show Rows for Targeted Area'):
     # Example bins for demonstration purposes
     example_x_bin = x_bins[1]  # Replace with actual selected X bin
     example_y_bin = y_bins[1]  # Replace with actual selected Y bin
