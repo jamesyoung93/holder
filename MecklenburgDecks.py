@@ -65,14 +65,18 @@ deck_area = st.sidebar.slider(
     step=1
 )
 
-cell_size = st.sidebar.number_input('Cell Size', value=5000, step=100)
+#cell_size = st.sidebar.number_input('Cell Size', value=5000, step=100)
+cell_size = st.sidebar.number_input('Cell Size', value=0.01, step=0.01, min_value = 0.01)
 
 filtered_df = df[(df['longitude'] >= x_range[0]) & (df['longitude'] <= x_range[1]) &
                  (df['latitude'] >= y_range[0]) & (df['latitude'] <= y_range[1]) &
                  (df['Deck Area'] >= deck_area[0]) & (df['Deck Area'] <= deck_area[1])].copy()
 
-x_bins = np.arange(filtered_df['longitude'].min(), filtered_df['longitude'].max() + (cell_size / 100000), (cell_size / 100000))
-y_bins = np.arange(filtered_df['latitude'].min(), filtered_df['latitude'].max() + (cell_size / 100000), (cell_size / 100000))
+#x_bins = np.arange(filtered_df['longitude'].min(), filtered_df['longitude'].max() + (cell_size / 100000), (cell_size / 100000))
+#y_bins = np.arange(filtered_df['latitude'].min(), filtered_df['latitude'].max() + (cell_size / 100000), (cell_size / 100000))
+
+x_bins = np.arange(filtered_df['longitude'].min(), filtered_df['longitude'].max() + cell_size, cell_size)
+y_bins = np.arange(filtered_df['latitude'].min(), filtered_df['latitude'].max() + cell_size, cell_size)
 
 filtered_df['X Bin'] = pd.cut(filtered_df['longitude'], bins=x_bins, labels=x_bins[:-1], include_lowest=True)
 filtered_df['Y Bin'] = pd.cut(filtered_df['latitude'], bins=y_bins, labels=y_bins[:-1], include_lowest=True)
@@ -120,16 +124,27 @@ st.pyplot(fig)
 # Placeholder for table of selected points
 selected_points = st.empty()
 
-# Function to get filtered rows
-def get_filtered_rows(x_bin, y_bin):
-    return filtered_df[(filtered_df['X Bin'] == x_bin) & (filtered_df['Y Bin'] == y_bin)]
+# Create Streamlit inputs for min and max longitude and latitude
+def get_filtered_rows(min_longitude, max_longitude, min_latitude, max_latitude):
+    return filtered_df[(filtered_df['longitude'] >= min_longitude) &
+                       (filtered_df['longitude'] <= max_longitude) &
+                       (filtered_df['latitude'] >= min_latitude) &
+                       (filtered_df['latitude'] <= max_latitude)]
 
+# Define the cell size
+cell_size = 0.01
+
+# Create Streamlit inputs for min and max longitude and latitude
+#min_longitude = st.number_input('Min Longitude', value=float(filtered_df['longitude'].min()), step=cell_size)
+#max_longitude = st.number_input('Max Longitude', value=float(filtered_df['longitude'].max()), step=cell_size)
+#min_latitude = st.number_input('Min Latitude', value=float(filtered_df['latitude'].min()), step=cell_size)
+#max_latitude = st.number_input('Max Latitude', value=float(filtered_df['latitude'].max()), step=cell_size)
+
+# Button to filter rows for the targeted area
 if st.button('Show Rows for Targeted Area'):
-    example_x_bin = x_bins[1]
-    example_y_bin = y_bins[1]
-    st.session_state['selected_bin'] = (example_x_bin, example_y_bin)
+    filtered_rows = get_filtered_rows(x_range[0], x_range[1], y_range[0],  y_range[1])
+    st.session_state['filtered_rows'] = filtered_rows
 
-if st.session_state.get('selected_bin'):
-    x_bin, y_bin = st.session_state['selected_bin']
-    filtered_rows = get_filtered_rows(x_bin, y_bin)
-    selected_points.dataframe(filtered_rows)
+# Display filtered rows if they exist in session state
+if st.session_state.get('filtered_rows') is not None:
+    st.dataframe(st.session_state['filtered_rows'])
